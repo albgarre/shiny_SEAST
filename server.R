@@ -15,7 +15,25 @@ shinyServer(function(input, output) {
     ##-------------------------------------------------------------------------
     
     ## Tabla de tweets
+  tweets_frame <- reactive({
+    in_file <- input$in_file  # Accedemos al input
     
+    if (is.null(in_file))
+      return(NULL)
+    
+    file_path <- in_file$datapath  # in_file es una lista. El path esta en datapath.
+    
+    read.table(input$in_file$datapath, header = TRUE,
+               sep = "\t", stringsAsFactors = FALSE) %>%
+      mutate(.,
+             anno = year(fecha),
+             mes = month(fecha),
+             dia = day(fecha),
+             hora = hour(fecha),
+             minuto = minute(fecha),
+             hora0 = (dia - min(dia)) * 24 + hora + minuto/60
+      )})
+  
     ##---------------------------------------------------------------------
     
     ##TAREA2: Modificar para que trabaje con expresión reactiva
@@ -24,23 +42,7 @@ shinyServer(function(input, output) {
     
     output$tweets <- renderTable({
         
-        in_file <- input$in_file  # Accedemos al input
         
-        if (is.null(in_file))
-            return(NULL)
-        
-        file_path <- in_file$datapath  # in_file es una lista. El path esta en datapath.
-        
-        tweets_frame <- read.table(file_path, header = TRUE,
-                                   sep = "\t", stringsAsFactors = FALSE) %>%
-            mutate(.,
-                   anno = year(fecha),
-                   mes = month(fecha),
-                   dia = day(fecha),
-                   hora = hour(fecha),
-                   minuto = minute(fecha),
-                   hora0 = (dia - min(dia)) * 24 + hora + minuto/60
-            )
         
         ##---------------------------------------------------------------------
         
@@ -48,14 +50,23 @@ shinyServer(function(input, output) {
         
         ##---------------------------------------------------------------------
         
-        return(head(tweets_frame, 5))
+        return(head(tweets_frame(), input$in_nro_tweets))
 
     })
     
     ##-------------------------------------------------------------------------
     
     ##TAREA2: Implementar grafico de evolucion de tweets
-    
+    output$grafico_evolucion <- renderPlot({
+      
+      tabla <- tweets_frame()
+      
+      
+      tabla <- tabla %>% filter(between(ymd_hms(fecha), ymd(input$fechas[1]), ymd(input$fechas[2])))
+      
+      return(ggplot(data = tabla, aes(x = cut(hora0,input$breaks), fill = animo)) + geom_bar(position = "dodge"))
+      
+    })
     ##-------------------------------------------------------------------------
     
 })
