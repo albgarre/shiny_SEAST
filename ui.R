@@ -8,18 +8,20 @@ shinyUI(
     
     ## Barra de navegacion
     
-    navbarPage("Titulo",
+    navbarPage("#GoTSeason6",
                
                ## Panel 1
                
-               tabPanel("Panel 1",
+               tabPanel("Data Input",
                         sidebarLayout(
                             sidebarPanel(
-                                fileInput("in_file", "Selecciona archivo")
+                                fileInput("in_file", "Selecciona archivo"),
                                 
                                 ##---------------------------------------------
                                 
                                 ##TAREA1: Implementar numericInput para numero de filas
+                                
+                                numericInput("numfilas","Escribe el número de filas:",5)
                                 
                                 ##---------------------------------------------
                                 
@@ -32,19 +34,24 @@ shinyUI(
                
                ## Panel 2
                
-               tabPanel("Panel 2",
+               tabPanel("Resultados",
                         sidebarLayout(
                             sidebarPanel(
                                 ##---------------------------------------------
                                 
                                 ##TAREA2: Implementar dateRangeInput
                                 
+                                dateRangeInput("fechas","Selecciona fecha:"),     #Poner COMA!!!!!!!!!!
+                                sliderInput("deslizador","Pares de barras",0,25,5)
+                              
                                 ##---------------------------------------------
                                 ),
-                            mainPanel(
+                       mainPanel(
                                 ##---------------------------------------------
                                 
                                 ##TAREA2: Implementar grafico de evolucion
+                              
+                                plotOutput("grafica")
                                 
                                 ##---------------------------------------------
                                 )
