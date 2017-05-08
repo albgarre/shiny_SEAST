@@ -58,15 +58,13 @@ shinyServer(function(input, output) {
     
         output$grafica <- renderPlot({
           
-          copia <- tweets_frame()
-          copia <- filter(copia, fecha>input$restriccion[1] & fecha<input$restriccion[2])
+          primera <- tweets_frame()
+          primera <- filter(primera, fecha>input$restriccion[1] & fecha<input$restriccion[2])
           
           
-          mi_tabla <- copia 
-          # mi_tabla$fechagraf <- cut(ymd_hms(mi_tabla$fecha), input$barra)
+          mi_tabla <- primera 
           mi_tabla$hora0 <- cut(mi_tabla$hora0, input$barra)
           
-          # ggplot(data=mi_tabla, aes(x=fechagraf, color = animo, fill=animo)) +
           ggplot(data=mi_tabla, aes(x=hora0, color = animo, fill=animo)) +
             geom_bar(position = "dodge")
           
