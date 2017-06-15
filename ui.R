@@ -52,7 +52,7 @@ shinyUI(
                           dateRangeInput("Date", "Limites", start = "2016-04-18", end = "2016-05-01", min = NULL,
                                          max = NULL, format = "yyyy-mm-dd", startview = "month", weekstart = 0,
                                          language = "en", separator = " to ", width = NULL),
-                          sliderInput("num", "Numero Breaks", 2, 20, 5, step = NULL, round = FALSE,
+                          sliderInput("num", "Numero Breaks", 2, 20, 2, step = NULL, round = FALSE,
                                       format = NULL, locale = NULL, ticks = TRUE, animate = FALSE,
                                       width = NULL, sep = ",", pre = NULL, post = NULL, timeFormat = NULL,
                                       timezone = NULL, dragRange = TRUE)

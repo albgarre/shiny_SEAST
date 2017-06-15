@@ -24,7 +24,8 @@ shinyServer(function(input, output) {
   
   ##---------------------------------------------------------------------
   
-  output$tweets <- renderTable({
+  tweets_frame <-  reactive({
+    
     
     in_file <- input$in_file  # Accedemos al input
     
@@ -33,7 +34,7 @@ shinyServer(function(input, output) {
     
     file_path <- in_file$datapath  # in_file es una lista. El path esta en datapath.
     
-    tweets_frame <- read.table(file_path, header = TRUE,
+    read.table(file_path, header = TRUE,
                                sep = "\t", stringsAsFactors = FALSE) %>%
       mutate(.,
              anno = year(fecha),
@@ -43,14 +44,17 @@ shinyServer(function(input, output) {
              minuto = minute(fecha),
              hora0 = (dia - min(dia)) * 24 + hora + minuto/60
       )
+  })
     
+  output$tweets <- renderTable({
     ##---------------------------------------------------------------------
     
     ##TAREA1: Cambiar para que el numero de filas lo elija el usuario.
     
     ##---------------------------------------------------------------------
-    
-    return(head(tweets_frame, as.numeric(input$num_teewts)))
+
+      
+    return(head(tweets_frame(), input$num_teewts))
     
   })
   
@@ -59,8 +63,17 @@ shinyServer(function(input, output) {
   ##TAREA2: Implementar grafico de evolucion de tweets
   
   ##-------------------------------------------------------------------------
+
    output$out_histogram<- renderPlot({
-    ggplot(faithful)+ geom_histogram(aes(eruptions), bins=input$num)
+     valor <- tweets_frame()
+     valor <- filter(valor, fecha>input$Date[1] & fecha<input$Date[2])
+     
+     tabla <- valor
+     tabla$hora0 <- cut(tabla$hora0, input$num)
+     
+    ggplot(data=tabla, aes(x=hora0, color = animo, fill=animo))+
+      geom_bar(position = "dodge")
+
  })
   
 })
