@@ -1,11 +1,12 @@
 
+#Maria Perez
 
 library(shiny)
 library(dplyr)
 library(lubridate)
 
 ##-----------------------------------------------------------------------------
-
+t
 shinyServer(function(input, output) {
     
     ##-------------------------------------------------------------------------
@@ -15,6 +16,7 @@ shinyServer(function(input, output) {
     ##-------------------------------------------------------------------------
     
     ## Tabla de tweets
+  
     
     ##---------------------------------------------------------------------
     
@@ -22,25 +24,28 @@ shinyServer(function(input, output) {
     
     ##---------------------------------------------------------------------
     
+  tweets_frame <-reactive({ #lo hacemos reactivo
+    in_file <- input$in_file  # Accedemos al input
+    
+    if (is.null(in_file))
+      return(NULL)
+    
+    file_path <- in_file$datapath  # in_file es una lista. El path esta en datapath.
+    
+    read.table(file_path, header = TRUE,
+                               sep = "\t", stringsAsFactors = FALSE) %>%
+      mutate(.,
+             anno = year(fecha),
+             mes = month(fecha),
+             dia = day(fecha),
+             hora = hour(fecha),
+             minuto = minute(fecha),
+             hora0 = (dia - min(dia)) * 24 + hora + minuto/60
+      )
+    
+  } )
     output$tweets <- renderTable({
         
-        in_file <- input$in_file  # Accedemos al input
-        
-        if (is.null(in_file))
-            return(NULL)
-        
-        file_path <- in_file$datapath  # in_file es una lista. El path esta en datapath.
-        
-        tweets_frame <- read.table(file_path, header = TRUE,
-                                   sep = "\t", stringsAsFactors = FALSE) %>%
-            mutate(.,
-                   anno = year(fecha),
-                   mes = month(fecha),
-                   dia = day(fecha),
-                   hora = hour(fecha),
-                   minuto = minute(fecha),
-                   hora0 = (dia - min(dia)) * 24 + hora + minuto/60
-            )
         
         ##---------------------------------------------------------------------
         
@@ -48,7 +53,7 @@ shinyServer(function(input, output) {
         
         ##---------------------------------------------------------------------
         
-        return(head(tweets_frame, 5))
+        return(head(tweets_frame(),input$in_number))
 
     })
     
@@ -58,9 +63,21 @@ shinyServer(function(input, output) {
     
     ##-------------------------------------------------------------------------
     
+    output$fecha  <- renderPlot({
+      mi_tabla <- tweets_frame()
+      
+      mi_tabla  <-
+        filter(mi_tabla, fecha >input$restriccion[1] & fecha<input$restriccion[2])
+      
+      
+      mi_tabla$hora0 <- cut(mi_tabla$hora0, input$num_barra)
+      
+      ggplot(data=mi_tabla, aes(x=hora0, color=animo, fill=animo)) +
+        geom_bar(position ="dodge")
+      
 })
 
-
+})
 
 
 

@@ -1,60 +1,73 @@
 
-
+#Maria Perez
 library(shiny)
+library(ggplot2)
 
 #------------------------------------------------------------------------------
 
 shinyUI(
-    
-    ## Barra de navegacion
-    
-    navbarPage("Titulo",
-               
-               ## Panel 1
-               
-               tabPanel("Panel 1",
-                        sidebarLayout(
-                            sidebarPanel(
-                                fileInput("in_file", "Selecciona archivo")
-                                
-                                ##---------------------------------------------
-                                
-                                ##TAREA1: Implementar numericInput para numero de filas
-                                
-                                ##---------------------------------------------
-                                
-                            ),
-                            mainPanel(
-                                tableOutput("tweets")
-                            )
+  
+  ## Barra de navegacion
+  
+  navbarPage("#GoTSeason6",
+             
+             ## Panel 1
+             
+             tabPanel("Data Input",
+                      sidebarLayout(
+                        sidebarPanel(
+                          fileInput("in_file", "Selecciona archivo"),
+                          
+                          ##---------------------------------------------
+                          
+                          ##TAREA1: Implementar numericInput para numero de filas
+                          
+                          numericInput("in_number", "Introduzca número de tweets", 5)
+                          
+                          
+                          ##---------------------------------------------
+                          
+                        ),
+                        mainPanel(
+                          tableOutput("tweets")
                         )
-               ),
-               
-               ## Panel 2
-               
-               tabPanel("Panel 2",
-                        sidebarLayout(
-                            sidebarPanel(
-                                ##---------------------------------------------
-                                
-                                ##TAREA2: Implementar dateRangeInput
-                                
-                                ##---------------------------------------------
-                                ),
-                            mainPanel(
-                                ##---------------------------------------------
-                                
-                                ##TAREA2: Implementar grafico de evolucion
-                                
-                                ##---------------------------------------------
-                                )
+                      )
+             ),
+             
+             ## Panel 2
+             
+             tabPanel("Resultados",
+                      sidebarLayout(
+                        sidebarPanel(
+                          ##---------------------------------------------
+                          
+                          ##TAREA2: Implementar dateRangeInput
+                          
+                          
+                          sliderInput("num_barra", "número de barras", 2, 20, 2),
+                          dateRangeInput("restriccion", "Límite temporal")
+                          ##---------------------------------------------
+                        ),
+                        mainPanel(
+                          plotOutput("fecha")
+                          
+                          ##---------------------------------------------
+                          
+                          ##TAREA2: Implementar grafico de evolucion
+                          
+                          ##---------------------------------------------
+                          
+                          
+                          
+                          
+                          
+                          
                         )
-               )
-               
-    )  ##-- Fin navbarPage #GoTSeason6
+                      )
+             )
+             
+  )  ##-- Fin navbarPage #GoTSeason6
 )
-
-
 
 
 
