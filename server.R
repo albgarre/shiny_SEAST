@@ -2,6 +2,7 @@
 
 library(shiny)
 library(dplyr)
+library(ggplot2)
 library(lubridate)
 
 ##-----------------------------------------------------------------------------
@@ -14,7 +15,29 @@ shinyServer(function(input, output) {
     
     ##-------------------------------------------------------------------------
     
-    ## Tabla de tweets
+    tweets_frame <- reactive({
+    
+      in_file <- input$in_file
+    
+      if(is.null(in_file))
+        return(NULL)
+    
+      path <- in_file$datapath
+    
+      read.table(path, 
+                 header = TRUE, 
+                 sep = "\t", 
+                 stringsAsFactors = FALSE) %>%
+        mutate(.,
+               anno = year(fecha),
+               mes = month(fecha),
+               dia = day(fecha),
+               hora = hour(fecha),
+               minuto = minute(fecha),
+               hora0 = (dia - min(dia)) * 24 + hora + minuto/60
+        )
+    })
+  
     
     ##---------------------------------------------------------------------
     
@@ -23,40 +46,35 @@ shinyServer(function(input, output) {
     ##---------------------------------------------------------------------
     
     output$tweets <- renderTable({
-        
-        in_file <- input$in_file  # Accedemos al input
-        
-        if (is.null(in_file))
-            return(NULL)
-        
-        file_path <- in_file$datapath  # in_file es una lista. El path esta en datapath.
-        
-        tweets_frame <- read.table(file_path, header = TRUE,
-                                   sep = "\t", stringsAsFactors = FALSE) %>%
-            mutate(.,
-                   anno = year(fecha),
-                   mes = month(fecha),
-                   dia = day(fecha),
-                   hora = hour(fecha),
-                   minuto = minute(fecha),
-                   hora0 = (dia - min(dia)) * 24 + hora + minuto/60
-            )
-        
-        ##---------------------------------------------------------------------
-        
-        ##TAREA1: Cambiar para que el numero de filas lo elija el usuario.
-        
-        ##---------------------------------------------------------------------
-        
-        return(head(tweets_frame, 5))
-
-    })
+      
+      ##---------------------------------------------------------------------
+      
+      ##TAREA1: Cambiar para que el numero de filas lo elija el usuario.
+      
+      ##---------------------------------------------------------------------
+      
+      filas <- input$n_tweets
+      return(head(tweets_frame(), n = filas))
+      
+      })
     
     ##-------------------------------------------------------------------------
     
     ##TAREA2: Implementar grafico de evolucion de tweets
     
     ##-------------------------------------------------------------------------
+
+    output$grafico_output <- renderPlot({
+      
+      grafico <- tweets_frame() %>%
+        filter (fecha > input$daterange[1] & fecha < input$daterange[2]) %>%
+        mutate (hora0 =  cut(hora0, input$slider)) %>%
+        ggplot (aes(x = hora0, color = animo, fill = animo)) + 
+        geom_bar (position = 'dodge') +
+        ylab('Numero de tweets')
+      
+      return(grafico)
+    })
     
 })
 
