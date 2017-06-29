@@ -8,18 +8,20 @@ shinyUI(
     
     ## Barra de navegacion
     
-    navbarPage("Titulo",
+    navbarPage("#GoTSeason6",
                
                ## Panel 1
                
-               tabPanel("Panel 1",
+               tabPanel("Data Input",
                         sidebarLayout(
                             sidebarPanel(
-                                fileInput("in_file", "Selecciona archivo")
+                                fileInput("in_file", "Selecciona archivo"),
                                 
                                 ##---------------------------------------------
                                 
                                 ##TAREA1: Implementar numericInput para numero de filas
+                                
+                                numericInput("in_number", "Numero de tweets", 5)
                                 
                                 ##---------------------------------------------
                                 
@@ -32,12 +34,17 @@ shinyUI(
                
                ## Panel 2
                
-               tabPanel("Panel 2",
+               tabPanel("Resultados",
                         sidebarLayout(
                             sidebarPanel(
                                 ##---------------------------------------------
                                 
                                 ##TAREA2: Implementar dateRangeInput
+                              
+                              dateRangeInput("restriccion", "Limites"),
+                              sliderInput("barra", "Numero breaks", 2, 20, 2)
+                              
+                              
                                 
                                 ##---------------------------------------------
                                 ),
@@ -45,7 +52,7 @@ shinyUI(
                                 ##---------------------------------------------
                                 
                                 ##TAREA2: Implementar grafico de evolucion
-                                
+                                plotOutput("grafica")
                                 ##---------------------------------------------
                                 )
                         )
